@@ -17,8 +17,16 @@ try:
         logging.info("Config opened successful")
 except FileNotFoundError:
     logging.info("Can't open config, generating new")
-    host = ['127.0.0.1']
-    to_yaml = { 'host': host }
+    host = '127.0.0.1'
+    object_number = ''
+    username = 'sa'
+    password = ''
+    database = 'Pult4DB'
+    to_yaml = { 'host': host,
+                'username': username,
+                'password': password,
+                'database': database,
+                'object_number': object_number}
 
     with open('export_phoenix_employee_config.yaml', 'w') as f:
         yaml.dump(to_yaml, f, default_flow_style=False)
@@ -54,11 +62,11 @@ json_exemple['export_date'] = datetime.now().strftime("%Y-%m-%d")
 
 usercount = 0
 
-print('Connecting to server %s' % yaml_config['host'][0][0])
-host = yaml_config['host'][0][0]
-username = 'sa'
-password = ''
-database = 'Pult4DB'
+print('Connecting to server %s' % yaml_config['host'])
+host = yaml_config['host']
+username = yaml_config['username']
+password = yaml_config['password']
+database = yaml_config['database']
 
 conn = pymssql.connect(host, username, password, database)
 cursor = conn.cursor()
@@ -88,7 +96,8 @@ newrows = remove_duplicates(rows)
 for row in newrows:
     # print(row)
     # print(row[4][0])
-    if row[4][0] == '1':
+
+    if row[4][0] == yaml_config['object_number'] or yaml_config['object_number'] == '':
 
         username = row[1].split()
         obj_number = row[4]
