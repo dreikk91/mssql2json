@@ -1,6 +1,7 @@
 import copy
 import json
 import logging
+import time
 from datetime import datetime
 
 import pymssql
@@ -143,3 +144,4 @@ json_result = json.dumps(json_exemple, ensure_ascii=False, indent=4).encode('utf
 with open('converted_sql.json', 'w', encoding='utf8') as outfile:
     outfile.write(json_result)
 print('Total exported employees %s' % usercount)
+time.sleep(10)
