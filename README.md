@@ -10,7 +10,7 @@ database: Pult4DB - назва бази даних
 
 host: 127.0.0.1 - адрес сервера
 
-object_number: '1' -  Наприклад у ваших об'єктів з приладами ajax пультовий починається з 'F' і ви хочите експортувати відповідальних тільки з аяксу, потрібно написати object_number: 'F', якщо хочете експортувати всіх відповідальних, напишіть object_number: ''
+object_number: '1' -  Наприклад у ваших об'єктів з приладами ajax пультовий починається з 'F' і ви хочите експортувати відповідальних тільки для аяксу, потрібно написати object_number: 'F', якщо хочете експортувати всіх відповідальних, напишіть object_number: ''
 
 password: '' - Пароль від бази даних
 
@@ -28,7 +28,7 @@ database: Pult4DB - the name of the database
 
 host: 127.0.0.1 - server address
 
-object_number: '1' - For example, for your objects with ajax devices, the object number starts with 'F' and you want to export only those responsible from ajax, you need to write object_number: 'F', if you want to export all those responsible, write object_number: ''
+object_number: '1' - For example, for your objects with ajax devices, the object number starts with 'F' and you want to export only those responsible for ajax, you need to write object_number: 'F', if you want to export all those responsible, write object_number: ''
 
 password: '' - Password from the database
 
