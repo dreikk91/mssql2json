@@ -23,11 +23,17 @@ except FileNotFoundError:
     username = 'sa'
     password = ''
     database = 'Pult4DB'
-    to_yaml = { 'host': host,
-                'username': username,
-                'password': password,
-                'database': database,
-                'object_number': object_number}
+    to_yaml = {
+            "db_connect": {
+            "host": host,
+            "username": username,
+            "password": password,
+            "database": database,
+        },
+        "object_number": { "from number": 1, "to number": 9999 },
+        "object_numbers_from_list": True,
+        "object_list": "1212"
+    }
 
     with open('export_phoenix_employee_config.yaml', 'w') as f:
         yaml.dump(to_yaml, f, default_flow_style=False)
@@ -63,11 +69,11 @@ json_exemple['export_date'] = datetime.now().strftime("%Y-%m-%d")
 
 usercount = 0
 
-print('Connecting to server %s' % yaml_config['host'])
-host = yaml_config['host']
-username = yaml_config['username']
-password = yaml_config['password']
-database = yaml_config['database']
+print('Connecting to server %s' % yaml_config['db_connect']['host'])
+host = yaml_config['db_connect']['host']
+username = yaml_config['db_connect']['username']
+password = yaml_config['db_connect']['password']
+database = yaml_config['db_connect']['database']
 
 conn = pymssql.connect(host, username, password, database)
 cursor = conn.cursor()
@@ -96,9 +102,50 @@ def remove_duplicates(listy):
 newrows = remove_duplicates(rows)
 for row in newrows:
     # print(row)
-    # print(row[4][0])
+    if yaml_config['object_numbers_from_list'] == True:
+        if row[4] in yaml_config['object_list']:
+            print(row[4])
+            username = row[1].split()
+            obj_number = row[4]
+            phone_number = row[3]
+            try:
+                json_user['last_name'] = copy.deepcopy(obj_number + ' ' + username[0])
+            except IndexError as err:
+                print(err)
+                json_user['last_name'] = copy.deepcopy(obj_number)
+            except KeyError as err:
+                logging.info(err)
+                json_user['last_name'] = copy.deepcopy(obj_number)
+            try:
+                json_user['first_name'] = copy.deepcopy(username[1])
+            except IndexError as err:
+                logging.info(err)
+                json_user['first_name'] = copy.deepcopy(obj_number)
+            except KeyError as err:
+                logging.info(err)
+                json_user['first_name'] = copy.deepcopy(obj_number)
+            try:
+                json_user['middle_name'] = copy.deepcopy(username[-1])
+            except IndexError as err:
+                logging.info(err)
+                json_user['middle_name'] = copy.deepcopy(obj_number)
+            except KeyError as err:
+                logging.info(err)
+                json_user['middle_name'] = copy.deepcopy(obj_number)
 
-    if row[4][0] == yaml_config['object_number'] or yaml_config['object_number'] == '':
+            try:
+                if str(phone_number)[0] == '3':
+                    json_user['phone_numbers'][0]['number'] = '+' + str(phone_number)
+                else:
+                    json_user['phone_numbers'][0]['number'] = '+38' + str(phone_number)
+            except IndexError as err:
+                logging.info(err)
+                json_user['phone_numbers'][0]['number'] = ''
+
+            json_exemple['data'].insert(copy.deepcopy(usercount), copy.deepcopy(json_user))
+            usercount += 1
+
+    elif row[4][0] == yaml_config['object_number'] or yaml_config['object_number'] == '':
 
         username = row[1].split()
         obj_number = row[4]
@@ -141,7 +188,7 @@ for row in newrows:
         usercount += 1
 
 json_result = json.dumps(json_exemple, ensure_ascii=False, indent=4).encode('utf8').decode('utf8')
-with open('converted_sql.json', 'w', encoding='utf8') as outfile:
+with open('converted_users_sql.json', 'w', encoding='utf8') as outfile:
     outfile.write(json_result)
 print('Total exported employees %s' % usercount)
 time.sleep(10)
